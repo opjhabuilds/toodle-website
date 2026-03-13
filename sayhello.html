@@ -40,10 +40,13 @@ textarea.finp{resize:vertical;min-height:110px;}
 .fsel{appearance:none;background:rgba(255,255,255,.08) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M0 0l6 8 6-8z' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E") no-repeat right 14px center;cursor:pointer;}
 .fbtn{width:100%;background:var(--ye);color:var(--nv);border:none;cursor:pointer;padding:15px;border-radius:10px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;transition:all .2s;margin-top:4px;}
 .fbtn:hover{background:#FFD84D;transform:translateY(-2px);box-shadow:0 8px 24px rgba(245,196,24,.35);}
-.success-msg{display:none;text-align:center;padding:20px 0;}
-.success-msg .big{font-size:44px;display:block;margin-bottom:12px;}
-.success-msg h3{font-family:'Fraunces',serif;font-weight:700;font-size:22px;color:#fff;margin-bottom:8px;}
-.success-msg p{color:rgba(255,255,255,.55);font-size:14px;}
+.fbtn[disabled]{opacity:.7;cursor:wait;transform:none;box-shadow:none;}
+.success-msg,.error-msg{display:none;text-align:center;padding:20px 0;}
+.success-msg .big,.error-msg .big{font-size:44px;display:block;margin-bottom:12px;}
+.success-msg h3,.error-msg h3{font-family:'Fraunces',serif;font-weight:700;font-size:22px;color:#fff;margin-bottom:8px;}
+.success-msg p,.error-msg p{color:rgba(255,255,255,.55);font-size:14px;}
+.error-msg p a{color:#fff;font-weight:800;}
+.helper{font-size:12px;color:rgba(255,255,255,.45);margin-top:14px;line-height:1.5;}
 
 footer-bar{display:block;text-align:center;padding:32px;color:var(--mu);font-size:13px;border-top:1px solid var(--bd);margin-top:60px;}
 footer-bar a{color:var(--co);text-decoration:none;}
@@ -95,57 +98,126 @@ footer-bar a{color:var(--co);text-decoration:none;}
   <div class="form-card">
     <div id="contactFormWrap">
       <h2>Send us a message</h2>
-      <p class="sub">We will reply to your email directly, usually within a day.</p>
+      <p class="sub">This now submits to your Google Form, so entries should land in Google Forms responses / linked Google Sheet.</p>
       <input class="finp" type="text" id="cname" placeholder="Your name">
       <input class="finp" type="email" id="cemail" placeholder="Your email address">
       <select class="finp fsel" id="ctype">
         <option value="" disabled selected>What is this about?</option>
-        <option value="feedback">General feedback</option>
-        <option value="feature">Feature request</option>
-        <option value="bug">Bug report</option>
-        <option value="question">Question about the app</option>
-        <option value="business">Business or partnership</option>
-        <option value="other">Something else</option>
+        <option value="General feedback">General feedback</option>
+        <option value="Feature request">Feature request</option>
+        <option value="Bug report">Bug report</option>
+        <option value="Question about the app">Question about the app</option>
+        <option value="Business or partnership">Business or partnership</option>
+        <option value="Something else">Something else</option>
       </select>
       <textarea class="finp" id="cmsg" placeholder="Your message..."></textarea>
-      <button class="fbtn" onclick="sendContact()">Send Message</button>
+      <button class="fbtn" id="sendBtn" onclick="sendContact()">Send Message</button>
+      <p class="helper">If something goes wrong, email us directly at opjha.builds@gmail.com.</p>
     </div>
     <div class="success-msg" id="contactSuccess">
       <span class="big">🙌</span>
       <h3>Got it, thank you!</h3>
-      <p>We will get back to you at the email you provided. Usually within 24 hours.</p>
+      <p>Your message has been sent to Team Toodle. You should also see it in your Google Form responses.</p>
+    </div>
+    <div class="error-msg" id="contactError">
+      <span class="big">⚠️</span>
+      <h3>Temporary issue</h3>
+      <p>We could not submit the form just now. Please email us at <a href="mailto:opjha.builds@gmail.com">opjha.builds@gmail.com</a>.</p>
     </div>
   </div>
 </div>
 
 <footer-bar>2025 Toodle · <a href="/">Home</a> · <a href="/privacy">Privacy Policy</a> · <a href="/tnc">Terms and Conditions</a></footer-bar>
 
+<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+
 <script>
+const GOOGLE_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSfd8moUmlsns_NilLtxT405DrltdnRy1Ke9OO4Xk_VakeD4CQ/formResponse';
+let formSubmitted = false;
+let submitTimer = null;
+
+function markInvalid(id){
+  document.getElementById(id).style.borderColor = '#FF6B6B';
+}
+
+function clearInvalid(id){
+  document.getElementById(id).style.borderColor = 'rgba(255,255,255,.12)';
+}
+
+['cname','cemail','ctype','cmsg'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('input', () => clearInvalid(id));
+  el.addEventListener('change', () => clearInvalid(id));
+});
+
+document.getElementById('hidden_iframe').addEventListener('load', function(){
+  if(!formSubmitted) return;
+  clearTimeout(submitTimer);
+  document.getElementById('contactFormWrap').style.display = 'none';
+  document.getElementById('contactError').style.display = 'none';
+  document.getElementById('contactSuccess').style.display = 'block';
+  formSubmitted = false;
+});
+
 function sendContact(){
   const name = document.getElementById('cname').value.trim();
   const email = document.getElementById('cemail').value.trim();
   const type = document.getElementById('ctype').value;
   const msg = document.getElementById('cmsg').value.trim();
-  if(!email || !email.includes('@')){
-    document.getElementById('cemail').style.borderColor = '#FF6B6B';
-    return;
-  }
-  if(!msg){
-    document.getElementById('cmsg').style.borderColor = '#FF6B6B';
-    return;
-  }
-  fetch('https://formsubmit.co/ajax/opjha.builds@gmail.com', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-    body: JSON.stringify({
-      name: name || 'Anonymous',
-      email,
-      _subject: 'Toodle Contact: ' + (type || 'Message'),
-      message: `Type: ${type}\n\n${msg}\n\nFrom: ${name} (${email})`
-    })
-  }).catch(()=>{});
-  document.getElementById('contactFormWrap').style.display = 'none';
-  document.getElementById('contactSuccess').style.display = 'block';
+  const btn = document.getElementById('sendBtn');
+
+  let hasError = false;
+  if(!name){ markInvalid('cname'); hasError = true; }
+  if(!email || !email.includes('@')){ markInvalid('cemail'); hasError = true; }
+  if(!type){ markInvalid('ctype'); hasError = true; }
+  if(!msg){ markInvalid('cmsg'); hasError = true; }
+  if(hasError) return;
+
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+  document.getElementById('contactError').style.display = 'none';
+  document.getElementById('contactSuccess').style.display = 'none';
+
+  const form = document.createElement('form');
+  form.action = GOOGLE_FORM_ACTION;
+  form.method = 'POST';
+  form.target = 'hidden_iframe';
+  form.style.display = 'none';
+
+  const fields = {
+    'entry.1428125098': name,
+    'entry.561911850': email,
+    'entry.1379581888': type,
+    'entry.1818826511': msg
+  };
+
+  Object.entries(fields).forEach(([key, value]) => {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = key;
+    input.value = value;
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(form);
+  formSubmitted = true;
+
+  submitTimer = setTimeout(function(){
+    if(formSubmitted){
+      formSubmitted = false;
+      btn.disabled = false;
+      btn.textContent = 'Send Message';
+      document.getElementById('contactError').style.display = 'block';
+    }
+    form.remove();
+  }, 12000);
+
+  form.submit();
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.textContent = 'Send Message';
+    form.remove();
+  }, 1500);
 }
 </script>
 </body>
