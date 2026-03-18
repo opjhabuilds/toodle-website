@@ -41,6 +41,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:600;height:66px;padding:0 5%;dis
 .nwl:hover{border-color:var(--ye);background:var(--yl);}
 .ndl{background:var(--nv);color:var(--wh);padding:10px 22px;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;transition:all .2s;}
 .ndl:hover{background:var(--nv2);transform:translateY(-1px);}
+
+.nfb{font-size:13px;font-weight:700;color:var(--nv);text-decoration:none;padding:9px 16px;border-radius:10px;border:2px solid rgba(24,24,43,.10);background:rgba(255,255,255,.7);transition:all .2s;white-space:nowrap;}
+.nfb:hover{border-color:var(--co);background:var(--cl);color:var(--co);}
+.wlcta-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px;}
+.wlcta-secondary{display:inline-flex;align-items:center;justify-content:center;background:transparent;color:rgba(255,255,255,.82);border:1.5px solid rgba(255,255,255,.16);padding:12px 18px;border-radius:12px;font-size:13px;font-weight:800;text-decoration:none;transition:all .2s;line-height:1.2;}
+.wlcta-secondary:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.28);transform:translateY(-2px);}
 .nbg{display:none;background:none;border:2px solid var(--bd2);border-radius:9px;padding:8px;cursor:pointer;flex-direction:column;gap:4px;}
 .nbg span{display:block;width:18px;height:2px;background:var(--nv);border-radius:2px;}
 .mnav{display:none;position:fixed;top:66px;left:0;right:0;background:var(--cr);border-bottom:2px solid var(--bd);padding:16px 5%;flex-direction:column;z-index:599;}
@@ -343,7 +349,7 @@ footer{background:var(--nv);padding:56px 5% 36px;}
   nav{height:64px;padding:0 4%;gap:12px;}
   .nl{font-size:20px;gap:8px;}
   .nright{margin-left:auto;gap:8px;}
-  .nright .nwl,.nright .ndl{display:none;}
+  .nright .nwl,.nright .ndl,.nright .nfb{display:none;}
   .nbg{display:flex;align-items:center;justify-content:center;width:42px;height:42px;padding:0;}
   .mnav{top:64px;}
   .screens{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:28px;}
@@ -513,7 +519,7 @@ footer{background:var(--nv);padding:56px 5% 36px;}
   .wlr{max-width:none;}
 }
 @media(max-width:860px){
-  .nright .nwl,.nright .ndl{display:none;}
+  .nright .nwl,.nright .ndl,.nright .nfb{display:none;}
   .mnav{top:64px;}
   .hero{padding-left:4%;padding-right:4%;}
 }
@@ -829,6 +835,7 @@ footer{background:var(--nv);padding:56px 5% 36px;}
   <div class="nright">
     <a href="joinus.html" class="nwl">Join Beta</a>
     <a href="joinus.html" class="ndl">Get APK Access</a>
+    <a href="https://www.toodle.life/sayhello" class="nfb">Give Feedback</a>
     <button class="nbg" onclick="tmenu()" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
@@ -845,6 +852,7 @@ footer{background:var(--nv);padding:56px 5% 36px;}
   <a href="https://www.toodle.life/tnc">Terms and Conditions</a>
   <a href="https://www.toodle.life/sayhello">Say Hello</a>
   <a href="joinus.html" class="mdl">Get APK Access</a>
+  <a href="https://www.toodle.life/sayhello" class="mdl" style="background:#fff;color:var(--nv);border:2px solid var(--bd2);">Give Feedback</a>
 </div>
 
 <div class="blob b1"></div>
@@ -1165,7 +1173,10 @@ footer{background:var(--nv);padding:56px 5% 36px;}
           <div class="wlck"><span class="wlcki">✓</span>Android install guidance now, plus iPhone updates when iOS is ready</div>
           <div class="wlck"><span class="wlcki">✓</span>Your feedback shapes what gets built next</div>
         </div>
-        <a href="joinus.html" class="wlmore">Read beta benefits + get APK</a>
+        <div class="wlcta-row">
+          <a href="joinus.html" class="wlmore">Read beta benefits + get APK</a>
+          <a href="https://www.toodle.life/sayhello" class="wlcta-secondary">Already using the APK? Share feedback</a>
+        </div>
       </div>
       <div class="wlr wlmini-right">
         <div id="wlfw">
